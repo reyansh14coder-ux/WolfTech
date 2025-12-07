@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EduQuest Pro — Where coding meets learning. Gamified education, habit building, and career mastery in a cyberpunk universe.">
+    <title>EduQuest Pro — Cyber Edition</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@600&display=swap" rel="stylesheet">
+
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #f59e0b;
+            --electric: #00d4ff;
+            --glitch: #ff00c8; /* Added for RGB effect */
+            --dark: #0a0e17;
+            --light: #f8fafc;
+            --border-color: rgba(0, 212, 255, 0.3);
+            --glass: rgba(15, 23, 42, 0.45);
+            --glow: 0 0 30px rgba(0, 212, 255, 0.6);
+            --secondary-glow: 0 0 15px rgba(139, 92, 246, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', 'Orbitron', sans-serif;
+            background: #000;
+            color: #f0f4ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.7;
+            cursor: none; /* Hide default cursor */
+        }
+
+        /* === NEW BACKGROUND ELEMENTS === */
+        #stars-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        .glass-container {
+            position: fixed; inset: 0; z-index: 2;
+            background: rgba(10, 14, 26, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            pointer-events: none;
+        }
+        .cyber-grid {
+            position: fixed; inset: 0; z-index: 3;
+            background: 
+                linear-gradient(90deg, rgba(0,212,255,0.06) 1px, transparent 1px),
+                linear-gradient(rgba(0,212,255,0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 40s linear infinite;
+        }
+        @keyframes gridMove { to { transform: translate(60px, 60px); } }
+        .scan-line {
+            position: fixed; top: -10px; left: 0; right: 0; height: 8px;
+            background: linear-gradient(90deg, transparent, var(--electric), transparent);
+            box-shadow: var(--glow);
+            opacity: 1; z-index: -20; pointer-events: none;
+            animation: scan 5s linear infinite;
+        }
+        @keyframes scan { to { top: 100vh; } }
+        
+        /* Cursor Styling (needs JS) */
+        .cursor {
+            position: fixed; width: 36px; height: 36px; pointer-events: none; z-index: 9999;
+            border: 2px solid var(--electric); border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #00d4ff33, transparent 70%);
+            box-shadow: var(--glow);
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s;
+        }
+        .cursor::after {
+            content: ""; position: absolute; inset: 8px; border-radius: 50%;
+            background: var(--electric); animation: pulse_cursor 1.8s infinite;
+        }
+        @keyframes pulse_cursor { 0%,100% { transform: scale(0.8); opacity: 0.6; } 50% { transform: scale(1.4); opacity: 1; } }
+        .glitter {
+            position: fixed; pointer-events: none; z-index: 10;
+            width: 4px; height: 4px; background: #fff;
+            border-radius: 50%; opacity: 0;
+            box-shadow: 0 0 10px #00d4ff;
+        }
+        /* Keyframe for glitter added in JS */
+
+
+        /* Header */
+        header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 1.8rem 6%; backdrop-filter: blur(20px);
+            background: rgba(10, 14, 26, 0.4);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .logo {
+            display: flex; align-items: center; gap: 15px;
+        }
+        .logo-icon {
+            width: 55px; height: 55px;
+            background: url('Logo.jpeg') center/contain no-repeat;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            box-shadow: var(--glow);
+        }
+        /* RGB Logo Text */
+        .logo-text {
+            font: bold 2.8rem 'Orbitron', sans-serif;
+            letter-spacing: 6px;
+            background: linear-gradient(45deg, var(--primary), var(--electric), var(--glitch));
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(0,212,255,0.6);
+        }
+        nav { display: flex; gap: 2.5rem; }
+        nav a {
+            color: #ccc; text-decoration: none; font-weight: 600;
+            text-transform: uppercase; font-size: 1.1rem; letter-spacing: 1px;
+            position: relative; transition: all 0.3s;
+        }
+        nav a::after {
+            content: ''; position: absolute; bottom: -10px; left: 0;
+            width: 0; height: 3px; background: var(--electric);
+            transition: width 0.4s; border-radius: 2px; box-shadow: var(--glow);
+        }
+        nav a:hover { color: var(--electric); text-shadow: var(--glow); }
+        nav a:hover::after { width: 100%; }
+
+        /* Burger Menu (Added from new snippet, but hidden for desktop view) */
+        .bar-contain { display: none; }
+        
+        /* Hero */
+        .hero {
+            margin-top: 10px;
+            padding: 8% 10%;
+            display: flex; align-items: center; gap: 8rem;
+            min-height: 90vh; position: relative; z-index: 5;
+        }
+        .text-holder { max-width: 55%; } /* Restrict text width */
+        /* RGB H1 Text */
+        .text-holder h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem; font-weight: 900; line-height: 0.95;
+            background: linear-gradient(45deg, #fff, var(--electric), var(--glitch), var(--primary));
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 40px rgba(0,212,255,0.7);
+            animation: hueShift 6s infinite;
+            margin-bottom: 2rem; /* Adjusted margin */
+        }
+        @keyframes hueShift { to { filter: hue-rotate(360deg); } }
+        .blink-cursor {
+            color: var(--electric);
+            animation: blink 0.9s step-end infinite;
+            text-shadow: var(--glow);
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .hero p {
+            font-size: 1.35rem; opacity: 0.92; margin: 1.5rem 0; /* Changed <br> into margins */
+        }
+        .cta-btn { /* Using the old class name "more" for the button */
+            display: inline-flex; align-items: center; gap: 16px;
+            padding: 1.6rem 4rem; margin-top: 2.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--electric));
+            color: white; font-weight: bold; font-size: 1.3rem;
+            text-transform: uppercase; border-radius: 60px;
+            position: relative; overflow: hidden; text-decoration: none;
+            box-shadow: var(--glow); transition: all 0.5s;
+            backdrop-filter: blur(10px);
+        }
+        .cta-btn::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: translateX(-150%); transition: 0.8s;
+        }
+        .cta-btn:hover::before { transform: translateX(150%); }
+        .cta-btn:hover {
+            transform: translateY(-12px) scale(1.12);
+            box-shadow: 0 0 80px rgba(0,212,255,0.9);
+        }
+
+        .hero img {
+            max-width: 500px; border-radius: 30px;
+            border: 3px solid var(--electric);
+            box-shadow: 0 0 60px rgba(0,212,255,0.5);
+            transition: 1s;
+        }
+        .hero img:hover { transform: scale(1.05); box-shadow: 0 0 100px rgba(0,212,255,0.8); }
+
+        /* Content Text (Used for first paragraph of new text) */
+        .intro-text-section {
+            max-width: 1100px; margin: 5rem auto; padding: 3rem;
+            background: rgba(15,23,42,0.6); backdrop-filter: blur(16px);
+            border-left: 6px solid var(--electric); border-radius: 18px;
+            font-size: 1.25rem; text-align: center;
+            position: relative; z-index: 5;
+        }
+
+        /* Feature Cards (Combined new text into the glass card style) */
+        .features {
+            max-width: 1600px; margin: 8rem auto; padding: 0 5%;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* Wider cards */
+            gap: 3rem; z-index: 5; position: relative;
+        }
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 3rem;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .card:hover {
+            transform: translateY(-25px) rotateX(8deg);
+            border-color: var(--electric);
+            box-shadow: 0 40px 100px rgba(0,212,255,0.4);
+            background: rgba(20, 30, 50, 0.6);
+        }
+        .card h1 { /* Changed from H2 to H1 to match new snippet */
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.4rem; margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--electric), var(--glitch));
+            -webkit-background-clip: text; background-clip: text;
+            color: transparent;
+        }
+        .card p { font-size: 1.1rem; }
+
+        /* Footer */
+        footer {
+            margin-top: 12rem; padding: 5rem 5% 3rem;
+            background: linear-gradient(to top, #000, #0a0e17);
+            border-top: 3px solid var(--electric);
+            text-align: center; position: relative; z-index: 5;
+        }
+        .footer-grid {
+            max-width: 1200px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem; text-align: left;
+        }
+        .footer-section h3 {
+            color: var(--electric); margin-bottom: 1.5rem;
+            position: relative; display: inline-block;
+        }
+        .footer-section h3::after {
+            content: ''; position: absolute; bottom: -10px; left: 0;
+            width: 60px; height: 3px; background: var(--electric);
+        }
+
+        .footer-section a{
+            color: white;
+            text-decoration: none;
+        }
+        .social-links {
+            display: flex; gap: 1rem; margin-top: 1.5rem;
+        }
+        .social-links a {
+            width: 50px; height: 50px; background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #ccc; font-size: 1.4rem; transition: all 0.4s;
+        }
+        .social-links a:hover {
+            background: rgba(0,212,255,0.2);
+            color: var(--electric); transform: translateY(-6px);
+            box-shadow: var(--glow);
+        }
+        .footer-bottom {
+            text-align: center; margin-top: 4rem; padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.95rem; color: #888;
+        }
+
+        @media (max-width: 1500px) {
+            .hero{.text-holder{h1{font-size: 3.5rem;}}}
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero { flex-direction: column; text-align: center; padding: 8% 5%; top: 13vh;}
+            .text-holder { max-width: 100%; }
+            .text-holder h1 { font-size: 4.5rem; line-height: 1.1; }
+            .hero img { max-width: 80%; }
+            nav { display: none; } /* Hide desktop nav */
+            .bar-contain { display: block; } /* Show mobile menu icon */
+            .text-holder h1 { font-size: 3rem; }
+            .logo-text { font-size: 2rem; }
+            .features { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px){
+            .hero{top: 20vh;}
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="stars-canvas"></canvas>
+
+    <div class="glass-container"></div>
+    <div class="cyber-grid"></div>
+    <div class="scan-line"></div>
+    <div class="cursor"></div>
+
+    <header>
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <div class="logo-text">EDUQUEST PRO</div>
+        </div>
+        <nav>
+            <a href="homepage.html">Home</a>
+            <a href="habit-builder.html">Habit Builder</a>
+            <a href="http://127.0.0.1:8080/Edtech.html">Login</a>
+        </nav>
+        <button class="bar-contain" id="bars" onclick="openNav()">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </button>
+    </header>
+
+    <section class="hero">
+        <div class="text-holder">
+            <h1>EduQuest: Where coding meets education <span class="blink-cursor">|</span></h1>
+            <p>
+                EduQuest transforms the challenge of habit formation into an engaging and achievable quest. Leveraging behavioral science and a dynamic, personalized interface, we provide the structure, motivation, and clear progress tracking you need to master your routines, boost your productivity, and finally reach your long-term goals.
+            </p>
+            <a href="habit-builder.html" class="cta-btn">
+                Start Your Quest Today&nbsp;<i class="fa fa-arrow-right"></i>
+            </a>
+        </div>
+        <img src="image.png" alt="Futuristic student dashboard with holographic code">
+    </section>
+
+    <p class="intro-text-section">
+        EduQuest is the dedicated platform built for ambitious professionals ready to level up their careers. Stop waiting for opportunity—build it. Our curriculum is designed and taught by industry experts, focusing intensely on the **real-world projects** and **in-demand skills** that top companies are actively hiring for. With flexible scheduling and personalized mentorship, you can master a new domain in months, not years, and walk away with a verified certification and a portfolio that commands attention. **Join EduQuest and make your next career move inevitable.**
+    </p>
+
+    <section class="features">
+        <div class="card">
+            <div class="text">
+                <h1>Unlock Your Potential with Personalized Learning.</h1>
+                <p>
+                    Master in-demand skills, ace your exams, and advance your career with interactive courses designed by top educators. Start Your Free Trial today and take the first step toward a brighter future. The future of learning is here. At EduQuest, we offer the unique advantage of **Expert-Led Courses** taught by industry professionals, combined with **Personalized Learning Paths** powered by an AI-driven system that adapts to your pace. You won't just learn theory; you'll gain practical experience through **Hands-On Projects & Certifications**, earning shareable credentials to boost your profile. Join our **Global Community** of millions of learners for peer support and collaborative growth.
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="text">
+                <h1>Inculcate Habits Into Your Life through Fun games</h1>
+                <p>
+                    They say it's too hard to inculcate good habits into your life, especially after one enters adulthood. However, we don't think so! We think that learning values and habits is a lifelong process, tiring though it may seem, but we have made it easier by creating a habit-building page, where you can **turn discipline into an addictive cyber-quest** and track your progress with gamified XP.
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="text">
+                <h1>Don't Just Take Our Word For It.</h1>
+                <p>
+                    Success stories prove the value of our method. "Thanks to EduQuest's Data Science certification, I landed my dream job. The projects were invaluable!" – Sarah K., Junior Data Analyst. In fact, **92% of our certified learners report a career advancement within six months of completion.**
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="text">
+                <h1>Stop Waiting. Start Mastering.</h1>
+                <p>
+                    Take the first step toward achieving your educational and professional goals today. Whether you're upskilling, changing careers, or just curious—EduQuest is your trusted guide. **Join EduQuest for Free and begin your journey to knowledge.**
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section" style="text-align: center;">
+                <h3>EduQuest Pro</h3>
+                <p>The future of education is gamified, personalized, and unstoppable.</p>
+                <div class="social-links" style="justify-content: center;">
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Platform</h3><br>
+                <a href="habit-builder.html">Habit Builder</a><br>
+                <a href="sign-in.html">Login</a><br>
+                <a href="home.html">Home</a>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <br>
+                <a href="#">About Us</a>
+                <br>
+                <a href="#">Careers</a><br>
+
+                <a href="#">Blog</a><br>
+                <a href="#">Press Kit</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p><i class="fas fa-envelope"></i> info@eduquest.com</p>
+                <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Cyber Street, Tech City</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 EduQuest Pro — A WolfTech Creation • All rights reserved &copy; | EduQuest is a trademark of WolfTech &copy;</p>
+        </div>
+    </footer>
+
+    <script>
+        // === CANVAS TWINKLING PARALLAX STARS ===
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const layers = [
+            { speed: 0.2, count: 200, size: 1, opacity: 0.5 },
+            { speed: 0.5, count: 120, size: 1.5, opacity: 0.7 },
+            { speed: 1, count: 60, size: 2.5, opacity: 1 }
+        ];
+
+        const stars = [];
+        layers.forEach((layer, i) => {
+            for (let j = 0; j < layer.count; j++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: layer.size + Math.random() * 0.5,
+                    speed: layer.speed,
+                    opacity: Math.random() * 0.5 + 0.3,
+                    twinkleSpeed: 0.02 + Math.random() * 0.04,
+                    layer: i
+                });
+            }
+        });
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const time = Date.now() * 0.001;
+
+            stars.forEach(s => {
+                const twinkle = Math.sin(time * s.twinkleSpeed * (s.layer + 1)) * 0.4 + 0.6;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity * twinkle * layers[s.layer].opacity})`;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                s.x -= s.speed * 0.3;
+                if (s.x < 0) s.x = canvas.width;
+            });
+
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // === NEON CURSOR ===
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // === GLITTER SPARKLES ===
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const spark = document.createElement('div');
+                spark.classList.add('glitter');
+                spark.style.cssText = `
+                    position: fixed; z-index: 10; pointer-events: none;
+                    width: ${Math.random()*4+1}px; height: ${Math.random()*4+1}px;
+                    background: ${Math.random() > 0.5 ? 'var(--electric)' : 'var(--glitch)'};
+                    border-radius: 50%; opacity: 0;
+                    box-shadow: 0 0 10px var(--electric);
+                    left: ${Math.random() * window.innerWidth}px;
+                    top: ${window.innerHeight}px;
+                    animation: sparkle ${(Math.random() * 4 + 3)}s linear infinite;
+                `;
+                document.body.appendChild(spark);
+                setTimeout(() => spark.remove(), 7000);
+            }
+        }, 80);
+        
+        const sparkleStyle = document.createElement('style');
+        sparkleStyle.textContent = `@keyframes sparkle {
+            0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.7; }
+            100% { transform: translateY(-50px) scale(1); opacity: 0; }
+        }`;
+        document.head.appendChild(sparkleStyle);
+        
+        // Mobile Navigation (Placeholder function as implementation is external in 'home.js')
+        function openNav() {
+            // Placeholder for demonstration
+            console.log("Mobile navigation triggered!");
+        }
+    </script>
+</body>
+</html>
